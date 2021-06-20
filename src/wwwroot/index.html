@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Challenge.js</title>
+
+        <style>
+            body
+            {
+                font-family: Arial, Helvetica, sans-serif;
+            }
+
+            .content {
+                display: relative;
+            }
+
+            .grid {
+                display: grid;
+                grid-template-areas: "header header header header header header header header"
+                                     "mon tue wed thu fri sat sun ext";
+                grid-template-columns: 2fr 2fr 2fr 2fr 2fr 2fr 2fr 1fr;
+                grid-template-rows: 10vh 4vh 84vh;
+
+                border: 1px solid black;
+                vertical-align: middle;
+                text-align: center;
+            }
+
+            .header {
+                grid-row-start: header;
+                grid-row-end: header;
+                grid-column-start: header;
+                grid-column-end: header;
+
+                border: 1px solid black;
+
+                font-size:8vh;
+                -webkit-text-stroke: 2px black;
+                -webkit-text-fill-color: white;
+                color: white;
+            }
+
+            .day-header {
+                border: 1px solid black;
+                background-color: aquamarine;
+
+                vertical-align: middle;
+
+                font-size:3vh;
+                color: black;
+            }
+
+            .day {
+                border: 1px solid black;
+            }
+
+            .icon-container {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+            }
+
+            .icon {
+                position: absolute;
+                width: 4vw;
+            }
+
+        </style>
+    </head>
+
+    <script>
+        const serverRoot = `${location.protocol}//${location.host}`;
+        const apiRoot = `${serverRoot}/api`;
+
+        var iconContainer;
+        var currentIcons;
+        var currentlyDraggedIcon;
+        var currenlyDraggedElement;
+
+        function OnDragStart(event)
+        {
+            if (event.target.id.startsWith('icon') === false)
+            {
+                currentlyDraggedIcon = null;
+                currentlyDraggedElement = null;
+                return;
+            }
+            const index = Number(event.target.id.substring(4));
+            let icon = currentIcons[index];
+            currentlyDraggedIcon = icon;
+            currentlyDraggedElement = event.target;
+
+            const rect = event.target.getBoundingClientRect();
+            icon.DragOffsetX = event.clientX - rect.x;
+            icon.DragOffsetY = event.clientY - rect.y;
+        }
+
+        function AllowDrop(event)
+        {
+            event.preventDefault();
+        }
+
+        function OnDrop(event)
+        {
+            event.preventDefault();
+
+            if (currentlyDraggedIcon === null || currentlyDraggedElement === null)
+            {
+                return;
+            }
+
+            let x = 100 * (event.clientX - currentlyDraggedIcon.DragOffsetX) / document.documentElement.clientWidth;
+            let y = 100 * (event.clientY - currentlyDraggedIcon.DragOffsetY) / document.documentElement.clientHeight;
+
+            currentlyDraggedIcon.x = x;
+            currentlyDraggedIcon.y = y;
+            currentlyDraggedElement.style.left = `${x}vw`;
+            currentlyDraggedElement.style.top = `${y}vh`;
+
+            delete currentlyDraggedIcon.DragOffsetX;
+            delete currentlyDraggedIcon.DragOffsetY;
+            currentlyDraggedIcon = null;
+            currentlyDraggedElement = null;
+
+            SetCurrent();
+        }
+
+        function UpdateIcons()
+        {
+            console.log(currentIcons);
+            iconContainer.html = '';
+            for (let i = 0; i < currentIcons.length; i++)
+            {
+                let icon = currentIcons[i];
+                let img = document.createElement('img');
+                img.classList.add('icon');
+                img.src = `${serverRoot}/icons/${icon.image}`;
+                img.style.left = `${icon.x}vw`;
+                img.style.top = `${icon.y}vh`;
+                img.id = `icon${i}`;
+                img.draggable = true;
+                img.addEventListener('dragstart', OnDragStart);
+                iconContainer.appendChild(img);
+            }
+        }
+
+        function GetCurrent()
+        {
+            return new Promise((resolve, reject) => 
+            {
+                fetch(`${apiRoot}/current`)
+                .then(async (response) =>
+                {
+                    let current = await response.json();
+                    resolve(current);
+                })
+                .catch ((error) =>
+                {
+                    console.error(error);
+                    reject(error);
+                });
+            })
+        }
+
+        function SetCurrent()
+        {
+            return new Promise((resolve, reject) => 
+            {
+                fetch(`${apiRoot}/current`,
+                    {
+                        method: 'POST',
+                        body: JSON.stringify(currentIcons),
+                        headers: {'Content-Type': 'application/json'}
+                    }
+                )
+                .then(async (response) =>
+                {
+                    resolve();
+                })
+                .catch ((error) =>
+                {
+                    console.error(error);
+                    reject(error);
+                });
+            })
+        }
+
+        window.onload = () =>
+        {
+            iconContainer = document.getElementById("icons");
+
+            GetCurrent()
+            .then((icons) =>
+            {
+                currentIcons = icons;
+                UpdateIcons();
+            });
+        }
+
+    </script>
+    
+    <body>
+        <div class="content">
+            <div class="grid">
+                <div class="header">
+                    <span>Utmaningen</span>
+                </div>
+                <div class="day-header"><span>Måndag</span></div>
+                <div class="day-header"><span>Tisdag</span></div>
+                <div class="day-header"><span>Onsdag</span></div>
+                <div class="day-header"><span>Torsdag</span></div>
+                <div class="day-header"><span>Fredag</span></div>
+                <div class="day-header"><span>Lördag</span></div>
+                <div class="day-header"><span>Söndag</span></div>
+                <div class="day-header"><span>Bonus</span></div>
+
+                <div class="day"></div>
+                <div class="day"></div>
+                <div class="day"></div>
+                <div class="day"></div>
+                <div class="day"></div>
+                <div class="day"></div>
+                <div class="day"></div>
+                <div class="day"></div>
+            </div>
+            <div id="icons" class="icon-container" ondrop="OnDrop(event)" ondragover="AllowDrop(event)" />
+        </div>
+    </body>
+</html>
