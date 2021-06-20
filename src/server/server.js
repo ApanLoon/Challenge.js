@@ -22,7 +22,7 @@ app.use('/', Express.static(global.Config.WwwRoot));
 
 app.listen(global.Config.HttpPort, () =>
 {
-    console.log(`Challenge.js server listening on port ${global.Config.HttpPort}`);
+    Log(`Challenge.js server listening on port ${global.Config.HttpPort}`);
 })
 
 function LoadCurrent()
@@ -68,8 +68,26 @@ function SaveCurrent(list)
     {
         if (error)
         {
-            return console.log (error);
+            return Log (error);
         }
-        console.log(`Wrote ${global.Config.CurrentFile}.`);
+        Log(`Wrote ${global.Config.CurrentFile}.`);
     });
+}
+
+function Log(message)
+{
+    const date_ob = new Date();
+    const date = IntTwoChars(date_ob.getDate());
+    const month = IntTwoChars(date_ob.getMonth() + 1);
+    const year = date_ob.getFullYear();
+    const hours = IntTwoChars(date_ob.getHours());
+    const minutes = IntTwoChars(date_ob.getMinutes());
+    const seconds = IntTwoChars(date_ob.getSeconds());
+    const timestamp = year + "-" + month + "-" + date + " " + hours + ":" + minutes + ":" + seconds;
+    console.log(`${timestamp} ${message}`);
+}
+
+function IntTwoChars(i)
+{
+    return (`0${i}`).slice(-2);
 }
