@@ -30,7 +30,9 @@
                 grid-column-end: header;
 
                 border: 1px solid black;
+            }
 
+            .header span {
                 font-size:8vh;
                 -webkit-text-stroke: 2px black;
                 -webkit-text-fill-color: white;
@@ -49,6 +51,92 @@
 
             .day {
                 border: 1px solid black;
+            }
+
+            .tools-menu {
+                position:absolute;
+                top: 0.25vh;
+                right: 1.5vw;
+                text-align: center;
+                z-index: 10;
+            }
+
+            .tools-menu ul ul {
+                display: none;
+            }
+
+            .tools-menu ul li:hover > ul {
+                display: block;
+            }
+
+            .tools-menu ul {
+
+                list-style: none;
+                position: relative;
+                display: inline-table;
+            }
+
+            .tools-menu ul:after {
+                content: "";
+                clear: both;
+                display: block;
+            }
+
+            .tools-menu ul li {
+                float: left;
+            }
+
+            .tools-menu ul li:hover {
+                background: #4b545f;
+                background: linear-gradient(top, #4f5964 0%, #5f6975 40%);
+                background: -moz-linear-gradient(top, #4f5964 0%, #5f6975 40%);
+                background: -webkit-linear-gradient(top, #4f5964 0%,#5f6975 40%);
+            }
+
+            .tools-menu ul li:hover a {
+                color: #fff;
+            }
+                    
+            .tools-menu ul li a {
+                display: block;
+                padding: 5px 5px;
+                color: #757575;
+                text-decoration: none;
+            }
+
+            .tools-menu ul li a img {
+                height: 6vh;
+            }
+                                
+            .tools-menu ul ul {
+                background: #5f6975;
+                border-radius: 0px;
+                padding: 0;
+                position: absolute;
+                top: 100%;
+                right: 0px;
+            }
+
+            .tools-menu ul ul li {
+                float: none; 
+                border-top: 1px solid #6b727c;
+                border-bottom: 1px solid #575f6a;
+                position: relative;
+            }
+
+            .tools-menu ul ul li a {
+                padding: 5px 5px;
+                color: #fff;
+            }	
+
+            .tools-menu ul ul li a:hover {
+                background: #4b545f;
+            }
+                    
+            .tools-menu ul ul ul {
+                position: absolute;
+                right: 100%;
+                top: 0;
             }
 
             .icon-container {
@@ -202,6 +290,28 @@
             <div class="grid">
                 <div class="header">
                     <span>Utmaningen</span>
+                    <div class="tools-menu">
+                        <ul>
+                            <li><a href="#"><img src="icons/gear-icon.png" /></a>
+                                <ul>
+                                    <li><a href="#">Commit</a></li>
+                                    <li><a href="#">Add</a>
+                                        <ul>
+                                            <li><a href="#">Coke</a></li>
+                                            <li><a href="#">Cheeze Doodlez</a></li>
+                                        </ul>
+                                    </li>
+                                    <li><a href="#">Remove</a>
+                                        <ul>
+                                            <li><a href="#">Coke</a></li>
+                                            <li><a href="#">Cheeze Doodlez</a></li>
+                                        </ul>
+                                    </li>
+                                    <li><a href="#">Save default</a></li>
+                                </ul>        
+                            </li>
+                        </ul>                        
+                    </div>
                 </div>
                 <div class="day-header"><span>Måndag</span></div>
                 <div class="day-header"><span>Tisdag</span></div>
