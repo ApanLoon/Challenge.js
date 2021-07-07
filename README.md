@@ -1,1 +1,3 @@
 # Challenge.js
+
+A small web application that allows tracking of nasty habits in an attempt to break them...
